@@ -36,7 +36,7 @@ Welcome to my Dashboard Website! 🚀 This project is designed to provide a cent
 
 Check out the live application:
 
-🔗 **Live Website:** https://dineshkumar-dashboard-website.netlify.app/login
+🔗 **Live Website:** https://dineshkumar-dashboard-website.netlify.app
 
 ## ✨ Key Features
 
