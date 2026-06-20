@@ -108,7 +108,7 @@ export default function MainLayout() {
                 <img src={logo} alt="DK Logo" className="w-9 h-9 shrink-0" />
 
                 <span className="hidden md:block text-white font-semibold text-sm truncate max-w-[140px]">
-                  DK Dashboard
+                  DK
                 </span>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function MainLayout() {
             {/* ✅ ROW 1 */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
               <h1 className="text-white font-semibold text-sm md:text-lg">
-                Dashboard Control Center
+                Personal Financial Intelligence Dashboard
               </h1>
 
               {/* ✅ SEARCH BAR (LUCIDE ICON ✅) */}
@@ -246,7 +246,7 @@ export default function MainLayout() {
                   <span className="hidden md:block text-xs">Refresh</span>
                 </button>
 
-                <button
+                {/* <button
                   onClick={() => setFullScreen(!fullScreen)}
                   className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d] transition"
                 >
@@ -254,7 +254,7 @@ export default function MainLayout() {
                   <span className="hidden md:block text-xs">
                     {fullScreen ? "Exit" : "Fullscreen"}
                   </span>
-                </button>
+                </button> */}
 
               </div>
 
