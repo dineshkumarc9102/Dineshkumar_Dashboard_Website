@@ -49,10 +49,9 @@ export default function Salary() {
   };
 
   useEffect(() => {
-    setOnRefresh(() => handleRefresh);
-    setOnOpen(() => handleOpen);
-    setLastRefresh(lastRefresh);
-  }, [lastRefresh]);
+  setOnRefresh(() => handleRefresh);
+  setOnOpen(() => handleOpen);
+}, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
