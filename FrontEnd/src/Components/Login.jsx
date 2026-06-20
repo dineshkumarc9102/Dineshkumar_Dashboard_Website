@@ -56,6 +56,23 @@ export default function Login() {
     if (e.key === "Enter") handleLogin();
   };
 
+  const [progress, setProgress] = useState(5);
+
+  useEffect(() => {
+    if (!loading) return;
+
+    setProgress(5);
+
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 92) return p; // hold near end
+        return p + (Math.random() * 8); // natural random progress
+      });
+    }, 400);
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
   return (
     <div className="h-screen flex items-center justify-center bg-[#081421] relative overflow-hidden">
 
@@ -126,11 +143,10 @@ export default function Login() {
             placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
             onKeyDown={handleKey}
-            className={`w-full p-3 mb-4 rounded-lg bg-[#162b3d] border ${
-              status === "empty"
-                ? "border-red-500"
-                : "border-gray-600 focus:ring-2 focus:ring-blue-400"
-            }`}
+            className={`w-full p-3 mb-4 rounded-lg bg-[#162b3d] border ${status === "empty"
+              ? "border-red-500"
+              : "border-gray-600 focus:ring-2 focus:ring-blue-400"
+              }`}
           />
 
           {/* ✅ PASSWORD */}
@@ -140,11 +156,10 @@ export default function Login() {
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={handleKey}
-              className={`w-full p-3 pr-10 rounded-lg bg-[#162b3d] border ${
-                status === "empty"
-                  ? "border-red-500"
-                  : "border-gray-600 focus:ring-2 focus:ring-purple-400"
-              }`}
+              className={`w-full p-3 pr-10 rounded-lg bg-[#162b3d] border ${status === "empty"
+                ? "border-red-500"
+                : "border-gray-600 focus:ring-2 focus:ring-purple-400"
+                }`}
             />
 
             <span
@@ -185,6 +200,40 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </motion.button>
+          {loading && (
+            <div className="mt-4">
+
+              {/* ✅ LABEL */}
+              <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                <span>Loading...</span>
+                <span>{Math.floor(progress)}%</span>
+              </div>
+
+              {/* ✅ BAR CONTAINER */}
+              <div className="w-full h-[6px] bg-[#162b3d] rounded-full overflow-hidden relative">
+
+                {/* ✅ PROGRESS FILL */}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ ease: "easeOut", duration: 0.4 }}
+                  className="h-full rounded-full 
+        bg-gradient-to-r from-blue-400 via-purple-500 to-blue-400
+        shadow-[0_0_8px_rgba(59,130,246,0.7)]"
+                />
+
+                {/* ✅ SHINE EFFECT 🔥 */}
+                <motion.div
+                  animate={{ x: ["-100%", "200%"] }}
+                  transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                  className="absolute top-0 left-0 h-full w-1/3 
+        bg-white/20 blur-sm"
+                />
+
+              </div>
+
+            </div>
+          )}
 
           <p className="text-center text-gray-400 text-sm mt-4 italic">
             Secure dashboard access
