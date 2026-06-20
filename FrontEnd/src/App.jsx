@@ -7,6 +7,7 @@ import PO from "./Components/Po";
 import Stock from "./Components/Stock";
 import Login from "./Components/Login";
 import PrivateRoute from "./Components/PrivateRoute";
+import Calculator from "./Components/Calculator";
 
 export default function App() {
   return (
