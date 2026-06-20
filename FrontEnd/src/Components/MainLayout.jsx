@@ -13,7 +13,7 @@ import logo from "../assets/DK logo.svg";
 import { useDashboard } from "../Context/DashboardContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import Calculator from "../components/Calculator";
+import Calculator from "../Components/Calculator";
 
 export default function MainLayout() {
   const navigate = useNavigate();
