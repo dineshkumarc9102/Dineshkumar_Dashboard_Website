@@ -1,39 +1,30 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
+  RefreshCcw,
+  Search,
   IndianRupee,
   Mailbox,
   ChartCandlestick,
   LogOut,
-  RefreshCcw,
-  Maximize2,
-  Search,
-  Package,
-  TrendingUp,
-  Home
+  Calculator as CalcIcon
 } from "lucide-react";
 import toast from "react-hot-toast";
-
 import logo from "../assets/DK logo.svg";
 import { useDashboard } from "../Context/DashboardContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Calculator from "../components/Calculator";
 
 export default function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("token");
-
-  const { lastRefresh, onRefresh, onOpen } = useDashboard();
-
+  const timerRef = useRef(null);
   const [loadingPage, setLoadingPage] = useState(false);
-
-  const [fullScreen, setFullScreen] = useState(false);
-
   const [search, setSearch] = useState("");
+  const [showCalc, setShowCalc] = useState(false);
 
-  const { onRefresh } = useDashboard();
-
-  const { onOpen } = useDashboard();
+  const { lastRefresh, onRefresh } = useDashboard();
 
   useEffect(() => {
     setLoadingPage(true);
@@ -43,7 +34,7 @@ export default function MainLayout() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    toast.success("Logged out successfully ✅");
+    toast.success("Logged out ✅");
     navigate("/login");
   };
 
@@ -59,36 +50,54 @@ export default function MainLayout() {
   const handleSearch = (value) => {
     const v = value.toLowerCase();
 
-    if (v.includes("salary")) {
-      toast.success("Opening Salary Dashboard", {
-        icon: <IndianRupee size={18} className="text-green-500" />,
-      });
-      navigate("/salary");
-    }
-    else if (v.includes("po")) {
-      toast.success("Opening Post Office Dashboard", {
-        icon: <Mailbox size={18} className="text-yellow-400" />,
-      });
-      navigate("/po");
-    }
-    else if (v.includes("stock")) {
-      toast.success("Opening Stock Dashboard", {
-        icon: <ChartCandlestick size={18} className="text-blue-400" />,
-      });
-      navigate("/stock");
-    }
-    else if (v.includes("home")) {
-      toast.success("Back to Home", {
-        icon: <Home size={18} className="text-purple-400" />,
-      });
-      navigate("/");
-    }
-    else {
-      toast.error("No matching page found ❌");
-    }
+    if (v.includes("salary")) navigate("/salary");
+    else if (v.includes("po")) navigate("/po");
+    else if (v.includes("stock")) navigate("/stock");
+    else if (v.includes("home")) navigate("/");
+    else toast.error("No matching page ❌");
 
     setSearch("");
   };
+
+  useEffect(() => {
+
+    const logout = () => {
+      console.log("AUTO LOGOUT TRIGGERED ✅"); // debug
+      localStorage.removeItem("token");
+      toast.error("Session expired 🔒");
+      navigate("/login");
+    };
+
+    const resetTimer = () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(logout, 1 * 60 * 1000); // 1 min test
+    };
+
+    // ✅ Track activity
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+    window.addEventListener("click", resetTimer);
+    window.addEventListener("scroll", resetTimer); // ✅ add this
+
+    // ✅ Start timer
+    resetTimer();
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+      window.removeEventListener("click", resetTimer);
+      window.removeEventListener("scroll", resetTimer);
+    };
+
+  }, [navigate]);
+
 
   return (
     <div className="h-screen flex overflow-hidden relative">
@@ -100,25 +109,23 @@ export default function MainLayout() {
 
         {/* ✅ SIDEBAR */}
         {token && (
-          <div className="w-16 md:w-56 min-w-[64px] md:min-w-[224px] bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col border-r border-gray-700">
+          <div className="w-16 md:w-56 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col border-r border-gray-700">
 
-            {/* ✅ LOGO */}
+            {/* LOGO */}
             <div className="p-3 border-b border-gray-700">
               <div
                 onClick={() => navigate("/")}
-                className="flex items-center gap-2 cursor-pointer w-full"
+                className="flex items-center gap-2 cursor-pointer"
               >
-                <img src={logo} alt="DK Logo" className="w-9 h-9 shrink-0" />
-
-                <span className="hidden md:block text-white font-semibold text-sm truncate max-w-[140px]">
+                <img src={logo} className="w-9 h-9" />
+                <span className="hidden md:block text-white text-sm">
                   Dinesh Kumar
                 </span>
               </div>
             </div>
 
-            {/* ✅ MENU */}
-            <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-2">
-
+            {/* MENU */}
+            <div className="flex-1 p-3 space-y-2">
               {[
                 { name: "Salary", path: "/salary", icon: IndianRupee },
                 { name: "PO", path: "/po", icon: Mailbox },
@@ -128,154 +135,107 @@ export default function MainLayout() {
                 const active = location.pathname === item.path;
 
                 return (
-                  <motion.button
+                  <button
                     key={i}
                     onClick={() => navigate(item.path)}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative flex items-center gap-3 p-2 rounded-lg group overflow-hidden"
+                    className={`flex items-center gap-3 p-2 rounded-lg w-full
+                    ${active
+                        ? "bg-[#162b3d] text-white"
+                        : "text-gray-400 hover:text-blue-400 hover:bg-[#162b3d]"
+                      }`}
                   >
-                    {/* ACTIVE BACKGROUND */}
-                    {active && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 bg-[#162b3d] rounded-lg z-0"
-                      />
-                    )}
-
-                    {/* HOVER GLOW */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-blue-500/20 blur-xl transition z-0"></div>
-
-                    <Icon
-                      className={`relative z-10 ${active
-                        ? "text-blue-400"
-                        : "text-gray-400 group-hover:text-blue-400"
-                        }`}
-                    />
-
-                    <span
-                      className={`hidden md:block relative z-10 ${active
-                        ? "text-white"
-                        : "text-gray-300 group-hover:text-blue-400"
-                        }`}
-                    >
-                      {item.name}
-                    </span>
-                  </motion.button>
+                    <Icon size={18} />
+                    <span className="hidden md:block">{item.name}</span>
+                  </button>
                 );
               })}
-
             </div>
 
-            {/* ✅ ✅ LOGOUT MOVED TO BOTTOM ✅ ✅ */}
+            {/* LOGOUT */}
             <div className="p-3 border-t border-gray-700">
-              <motion.button
+              <button
                 onClick={handleLogout}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center md:justify-start gap-3 w-full p-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-[#162b3d] transition"
+                className="flex items-center gap-3 w-full p-2 text-gray-300 hover:text-red-400"
               >
                 <LogOut size={18} />
-
-                <span className="hidden md:block text-sm">
-                  Logout
-                </span>
-              </motion.button>
+                <span className="hidden md:block">Logout</span>
+              </button>
             </div>
 
           </div>
         )}
 
-        {/* ✅ RIGHT SIDE */}
+        {/* ✅ MAIN */}
         <div className="flex-1 flex flex-col">
 
           {/* ✅ HEADER */}
-          <div className="bg-[#0b1c2c]/70 backdrop-blur-md border-b border-gray-700 px-3 md:px-6 py-2">
+          <div className="bg-[#0b1c2c]/70 backdrop-blur-md border-b border-gray-700 px-4 py-2">
 
-            {/* ✅ ROW 1 */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
-              <h1 className="text-white font-semibold text-sm md:text-lg">
-                Personal Financial Intelligence Dashboard
+            {/* ✅ TOP */}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+
+              {/* ✅ TITLE */}
+              <h1 className="text-white text-sm md:text-lg truncate">
+                Personal Financial Dashboard
               </h1>
 
-              {/* ✅ SEARCH BAR (LUCIDE ICON ✅) */}
-              <div className="relative w-full  md:w-60">
-
-                {/* ICON */}
+              {/* ✅ SEARCH */}
+              <div className="relative w-full md:w-52">
                 <Search
-                  size={16}
                   className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={14}
                 />
-
                 <input
-                  type="text"
-                  placeholder="Search..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearch(search);
-                    }
-                  }}
-                  className="w-full bg-[#162b3d] text-white pl-8 pr-2 py-2 rounded-lg text-xs md:text-sm border border-gray-600 outline-none focus:ring-2 focus:ring-blue-400" />
-
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch(search)}
+                  placeholder="Search..."
+                  className="w-full pl-8 pr-2 py-1 text-white bg-[#162b3d] rounded-lg text-xs"
+                />
               </div>
 
             </div>
 
-            {/* ✅ ROW 2 */}
-            <div className="flex items-center justify-between mt-2">
+            {/* ✅ BOTTOM */}
+            <div className="flex justify-between items-center mt-2">
 
-              {/* MOBILE */}
-              <div className="md:hidden text-[11px] text-gray-400">
+              {/* ✅ TIME */}
+              <div className="text-[10px] md:text-xs text-gray-400">
                 {formatDate(lastRefresh)}
               </div>
 
-              {/* DESKTOP */}
-              <div className="hidden md:flex items-center gap-2 text-sm text-gray-400">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                {formatDate(lastRefresh)}
-              </div>
+              {/* ✅ BUTTONS */}
+              <div className="flex gap-2">
 
-              {/* BUTTONS */}
-              <div className="flex items-center gap-4">
-
+                {/* ✅ REFRESH */}
                 <button
-                  onClick={() => {
-                    onRefresh();
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d] transition"
+                  onClick={onRefresh}
+                  className="flex items-center gap-1 px-2 py-1 md:px-3 md:py-1 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d]"
                 >
-                  <RefreshCcw size={16} />
+                  <RefreshCcw size={14} md:size={16} />
                   <span className="hidden md:block text-xs">Refresh</span>
                 </button>
 
-                
-<button
-  onClick={() => onOpen()}
-  className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d]"
->
-  <TrendingUp size={16} />
-  <span className="hidden md:block text-xs">Open</span>
-</button>
-
-
-                {/* <button
-                  onClick={() => setFullScreen(!fullScreen)}
-                  className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d] transition"
+                {/* ✅ CALC */}
+                <button
+                  onClick={() => setShowCalc(!showCalc)}
+                  className="flex items-center gap-1 px-2 py-1 md:px-3 md:py-1 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d]"
                 >
-                  <Maximize2 size={16} />
-                  <span className="hidden md:block text-xs">
-                    {fullScreen ? "Exit" : "Fullscreen"}
-                  </span>
-                </button> */}
+                  <CalcIcon size={14} />
+                  <span className="hidden md:block text-xs">Calc</span>
+                </button>
 
               </div>
 
             </div>
-
           </div>
 
+
+          {/* ✅ CALCULATOR */}
+          {showCalc && <Calculator />}
+
           {/* ✅ CONTENT */}
-          <div className="flex-1 overflow-hidden relative">
+          <div className="flex-1 relative overflow-hidden">
 
             {loadingPage && (
               <motion.div
@@ -289,16 +249,14 @@ export default function MainLayout() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98, y: -10 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 className="h-full"
               >
                 <Outlet />
               </motion.div>
             </AnimatePresence>
-
 
           </div>
 
