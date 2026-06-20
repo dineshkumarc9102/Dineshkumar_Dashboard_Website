@@ -108,7 +108,7 @@ export default function MainLayout() {
                 <img src={logo} alt="DK Logo" className="w-9 h-9 shrink-0" />
 
                 <span className="hidden md:block text-white font-semibold text-sm truncate max-w-[140px]">
-                  DK
+                  Dinesh Kumar
                 </span>
               </div>
             </div>
