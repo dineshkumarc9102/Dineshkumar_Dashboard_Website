@@ -31,6 +31,9 @@ export default function MainLayout() {
 
   const [search, setSearch] = useState("");
 
+  const { onRefresh } = useDashboard();
+
+  const { onOpen } = useDashboard();
 
   useEffect(() => {
     setLoadingPage(true);
@@ -238,13 +241,22 @@ export default function MainLayout() {
                 <button
                   onClick={() => {
                     onRefresh();
-                    toast("Dashboard refreshed ✅");
                   }}
                   className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d] transition"
                 >
                   <RefreshCcw size={16} />
                   <span className="hidden md:block text-xs">Refresh</span>
                 </button>
+
+                
+<button
+  onClick={() => onOpen()}
+  className="flex items-center gap-2 p-2 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d]"
+>
+  <TrendingUp size={16} />
+  <span className="hidden md:block text-xs">Open</span>
+</button>
+
 
                 {/* <button
                   onClick={() => setFullScreen(!fullScreen)}
