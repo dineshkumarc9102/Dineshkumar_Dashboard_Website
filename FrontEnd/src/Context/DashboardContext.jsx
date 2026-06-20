@@ -4,19 +4,16 @@ const DashboardContext = createContext();
 
 export const DashboardProvider = ({ children }) => {
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [onRefresh, setOnRefresh] = useState(() => () => {});
-  const [onOpen, setOnOpen] = useState(() => () => {});
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const onRefresh = () => {
+    setLastRefresh(new Date());
+    setRefreshKey(prev => prev + 1); // 🔥 triggers reload
+  };
 
   return (
     <DashboardContext.Provider
-      value={{
-        lastRefresh,
-        setLastRefresh,
-        onRefresh,
-        setOnRefresh,
-        onOpen,
-        setOnOpen,
-      }}
+      value={{ lastRefresh, onRefresh, refreshKey }}
     >
       {children}
     </DashboardContext.Provider>
