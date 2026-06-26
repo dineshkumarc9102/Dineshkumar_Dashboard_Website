@@ -73,7 +73,7 @@ export default function MainLayout() {
         clearTimeout(timerRef.current);
       }
 
-      timerRef.current = setTimeout(logout, 1 * 60 * 1000); // 1 min test
+      timerRef.current = setTimeout(logout, 3 * 60 * 1000); // 3 min 
     };
 
     // ✅ Track activity
