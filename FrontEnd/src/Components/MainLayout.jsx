@@ -109,7 +109,8 @@ export default function MainLayout() {
 
         {/* ✅ SIDEBAR */}
         {token && (
-          <div className="w-16 md:w-56 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col border-r border-gray-700">
+
+          <div className="w-16 md:w-56 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col h-screen overflow-y-auto border-r border-gray-700">
 
             {/* LOGO */}
             <div className="p-3 border-b border-gray-700">
@@ -152,7 +153,8 @@ export default function MainLayout() {
             </div>
 
             {/* LOGOUT */}
-            <div className="p-3 border-t border-gray-700">
+
+            <div className="p-3 border-t border-gray-700 shrink-0">
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 w-full p-2 text-gray-300 hover:text-red-400"
@@ -161,6 +163,7 @@ export default function MainLayout() {
                 <span className="hidden md:block">Logout</span>
               </button>
             </div>
+
 
           </div>
         )}
@@ -262,6 +265,6 @@ export default function MainLayout() {
 
         </div>
       </div>
-    </div>
+    </div >
   );
 }
