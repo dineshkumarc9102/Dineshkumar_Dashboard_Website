@@ -6,14 +6,12 @@ import {
   Mailbox,
   ChartCandlestick,
   LogOut,
-  Calculator as CalcIcon
 } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../assets/DK logo.svg";
 import { useDashboard } from "../Context/DashboardContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import Calculator from "../Components/Calculator";
 
 export default function MainLayout() {
   const navigate = useNavigate();
@@ -22,7 +20,6 @@ export default function MainLayout() {
   const timerRef = useRef(null);
   const [loadingPage, setLoadingPage] = useState(false);
   const [search, setSearch] = useState("");
-  const [showCalc, setShowCalc] = useState(false);
 
   const { lastRefresh, onRefresh } = useDashboard();
 
@@ -58,6 +55,26 @@ export default function MainLayout() {
 
     setSearch("");
   };
+
+  useEffect(() => {
+    const page = location.pathname;
+
+    if (
+      page === "/salary" ||
+      page === "/po" ||
+      page === "/stock"
+    ) {
+      const visits =
+        JSON.parse(localStorage.getItem("dashboardVisits")) || {};
+
+      visits[page] = (visits[page] || 0) + 1;
+
+      localStorage.setItem(
+        "dashboardVisits",
+        JSON.stringify(visits)
+      );
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
 
@@ -98,7 +115,18 @@ export default function MainLayout() {
 
   }, [navigate]);
 
+  const pageTitles = {
+    "/": "Home",
+    "/salary": "Salary Dashboard",
+    "/po": "PO Dashboard",
+    "/stock": "Stock Dashboard",
+  };
 
+  const currentPage = pageTitles[location.pathname] || "Dashboard";
+
+  useEffect(() => {
+    localStorage.setItem("lastDashboard", currentPage);
+  }, [currentPage]);
   return (
     <div className="h-screen flex overflow-hidden relative">
 
@@ -120,7 +148,7 @@ export default function MainLayout() {
               >
                 <img src={logo} className="w-9 h-9" />
                 <span className="hidden md:block text-white text-sm">
-                  Dinesh Kumar
+                  Personal Financial Dashboard
                 </span>
               </div>
             </div>
@@ -178,8 +206,8 @@ export default function MainLayout() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
 
               {/* ✅ TITLE */}
-              <h1 className="text-white text-sm md:text-lg truncate">
-                Personal Financial Dashboard
+              <h1 className="text-white text-sm md:text-lg font-semibold truncate">
+                {currentPage}
               </h1>
 
               {/* ✅ SEARCH */}
@@ -218,24 +246,11 @@ export default function MainLayout() {
                   <RefreshCcw size={14} md:size={16} />
                   <span className="hidden md:block text-xs">Refresh</span>
                 </button>
-
-                {/* ✅ CALC */}
-                <button
-                  onClick={() => setShowCalc(!showCalc)}
-                  className="flex items-center gap-1 px-2 py-1 md:px-3 md:py-1 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d]"
-                >
-                  <CalcIcon size={14} />
-                  <span className="hidden md:block text-xs">Calc</span>
-                </button>
-
               </div>
 
             </div>
           </div>
 
-
-          {/* ✅ CALCULATOR */}
-          {showCalc && <Calculator />}
 
           {/* ✅ CONTENT */}
           <div className="flex-1 relative overflow-hidden">
