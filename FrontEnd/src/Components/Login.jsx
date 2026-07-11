@@ -36,6 +36,29 @@ export default function Login() {
         { username, password }
       );
 
+      // Save previous login
+      // Save previous login
+      const previousLogin = localStorage.getItem("loginTime");
+
+      if (previousLogin) {
+        localStorage.setItem("lastLogin", previousLogin);
+      }
+
+      // Save current login
+      localStorage.setItem(
+        "loginTime",
+        new Date().toISOString()
+      );
+
+      // Increase login count
+      const loginCount =
+        Number(localStorage.getItem("loginCount")) || 0;
+
+      localStorage.setItem(
+        "loginCount",
+        loginCount + 1
+      );
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("savedUser", username);
 
