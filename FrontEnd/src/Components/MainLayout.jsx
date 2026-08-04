@@ -107,10 +107,26 @@ export default function MainLayout() {
         clearTimeout(timerRef.current);
       }
 
-      window.removeEventListener("mousemove", resetTimer);
-      window.removeEventListener("keydown", resetTimer);
-      window.removeEventListener("click", resetTimer);
-      window.removeEventListener("scroll", resetTimer);
+      const events = [
+        "mousemove",
+        "keydown",
+        "click",
+        "scroll",
+        "touchstart"
+      ];
+
+      events.forEach(event =>
+        window.addEventListener(event, resetTimer)
+      );
+
+      return () => {
+        events.forEach(event =>
+          window.removeEventListener(
+            event,
+            resetTimer
+          )
+        );
+      };
     };
 
   }, [navigate]);
@@ -147,8 +163,13 @@ export default function MainLayout() {
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <img src={logo} className="w-9 h-9" />
-                <span className="hidden md:block text-white text-sm">
-                  Personal Financial Dashboard
+                <span className="hidden md:block text-white leading-tight">
+                  <span className="block text-sm font-semibold">
+                    Financial Intelligence
+                  </span>
+                  <span className="block text-xs text-gray-400">
+                    Dashboard
+                  </span>
                 </span>
               </div>
             </div>
@@ -167,9 +188,9 @@ export default function MainLayout() {
                   <button
                     key={i}
                     onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-3 p-2 rounded-lg w-full
+                    className={`flex items-center gap-3 p-2 rounded-lg w-full transition-all duration-300
                     ${active
-                        ? "bg-[#162b3d] text-white"
+                        ? "bg-[#162b3d] text-white border-l-4 border-blue-400"
                         : "text-gray-400 hover:text-blue-400 hover:bg-[#162b3d]"
                       }`}
                   >
