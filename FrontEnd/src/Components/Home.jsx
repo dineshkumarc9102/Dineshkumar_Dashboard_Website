@@ -5,9 +5,7 @@ import {
   IndianRupee,
   Mailbox,
   ChartCandlestick,
-  Clock3,
-  LogIn,
-  Activity
+  CheckCheck,
 } from "lucide-react";
 
 export default function Home() {
@@ -78,17 +76,9 @@ export default function Home() {
   const [loginCount, setLoginCount] =
     useState(0);
 
-  const [lastDashboard, setLastDashboard] =
-    useState("None");
-
   useEffect(() => {
     setLoginCount(
       Number(localStorage.getItem("loginCount")) || 0
-    );
-
-    setLastDashboard(
-      localStorage.getItem("lastDashboard") ||
-      "None"
     );
 
     const savedLastLogin = localStorage.getItem("lastLogin");
@@ -152,6 +142,27 @@ export default function Home() {
     stock: 0,
   });
 
+  const totalVisits =
+    dashboardVisits.salary +
+    dashboardVisits.po +
+    dashboardVisits.stock || 1;
+
+  const salaryPercent = Math.round(
+    (dashboardVisits.salary / totalVisits) * 100
+  );
+
+  const poPercent = Math.round(
+    (dashboardVisits.po / totalVisits) * 100
+  );
+
+  const stockPercent = Math.round(
+    (dashboardVisits.stock / totalVisits) * 100
+  );
+
+  const mostUsed =
+    Object.entries(dashboardVisits)
+      .sort((a, b) => b[1] - a[1])[0];
+
 
   return (
     <div className="h-full overflow-y-auto text-white relative px-4 md:px-8 py-3 md:py-10">
@@ -162,24 +173,71 @@ export default function Home() {
       <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-blue-500/20 blur-3xl bottom-20 left-10 animate-pulse" />
       <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-purple-500/20 blur-3xl top-20 right-10 animate-pulse" />
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-5xl mx-auto">
 
         {/* WELCOME */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{
+            opacity: 0,
+            y: 15
+          }}
+
+          animate={{
+            opacity: 1,
+            y: 0
+          }}
+
+          exit={{
+            opacity: 0,
+            y: -15
+          }}
+
+          transition={{
+            duration: 0.3,
+            ease: "easeOut"
+          }}
           className="mb-5 bg-[#0b1c2c]/60 backdrop-blur-md border border-gray-700 rounded-2xl p-3 md:p-8"
         >
-          <h1 className="text-center md:text-left text-lg md:text-5xl font-bold">
-            {greeting}, Dinesh Kumar
-          </h1>
+          <div className="space-y-3">
+            <h1 className="text-center md:text-left text-xl sm:text-3xl md:text-5xl font-bold">
+              {greeting}, Dinesh Kumar
+            </h1>
 
+            <p className="text-blue-400 text-xs md:text-lg">
+              {text}
+              <span className="animate-pulse">|</span>
+            </p>
 
-          <p className="text-center md:text-left text-blue-400 text-xs md:text-lg mt-2 min-h-[20px]">
-            {text}
-            <span className="animate-pulse">|</span>
-          </p>
+            <p className=" flex items-center text-[11px] text-gray-400 whitespace-nowrap">
+              Last Login
+
+              <span className="ml-2 text-orange-400">
+                {lastLogin}
+              </span>
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              <div className="bg-[#162b3d]/40 rounded-lg p-4 text-center">
+                <p className="text-gray-400 text-xs">
+                  Login Count
+                </p>
+
+                <p className="font-bold text-green-400">
+                  {loginCount}
+                </p>
+              </div>
+
+              <div className="bg-[#162b3d]/40 rounded-lg p-4 text-center">
+                <p className="text-gray-400 text-xs">
+                  Session
+                </p>
+                <div className="flex items-center justify-center gap-2 text-green-400 font-bold">                  <CheckCheck size={18} />
+                  <span>Active</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </motion.div>
 
         {/* DASHBOARDS */}
@@ -187,8 +245,7 @@ export default function Home() {
           <h2 className="text-lg md:text-xl font-semibold mb-4">
             Dashboards
           </h2>
-
-          <div className="grid grid-cols-3 gap-2 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 ">
             {cards.map((card) => {
               const Icon = card.icon;
 
@@ -198,16 +255,11 @@ export default function Home() {
                   whileHover={{
                     scale: 1.03,
                     y: -4,
+                    boxShadow:
+                      "0px 10px 30px rgba(59,130,246,0.3)"
                   }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => {
-                    localStorage.setItem(
-                      "lastDashboard",
-                      card.title
-                    );
-
-                    setLastDashboard(card.title);
-
                     navigate(card.route);
                   }}
                   className={`cursor-pointer rounded-xl p-2 md:p-6
@@ -215,10 +267,10 @@ export default function Home() {
                     bg-gradient-to-r ${card.color} shadow-xl
                     transition-all duration-300`}
                 >
-                  <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4 text-center">
+                  <div className="flex items-center justify-center gap-3 md:gap-4 text-center">
 
                     <Icon
-                      size={22}
+                      size={28}
                       className="md:w-8 md:h-8"
                     />
 
@@ -238,106 +290,99 @@ export default function Home() {
           </div>
         </div>
 
-        {/* STATUS */}
-        <div>
-          <h2 className="text-sm md:text-xl font-semibold mb-2 md:mb-4">
-            Overview
-          </h2>
-
-          <div className="grid grid-cols-2 gap-2 md:gap-5">
-
-            <div className="bg-gradient-to-br from-[#0b1c2c] to-[#12263a] backdrop-blur-md border border-gray-700 rounded-2xl p-3 md:p-6">
-              <p className="text-gray-400 text-[10px] md:text-sm">
-                Session Status
-              </p>
-
-              <h3 className="text-sm md:text-2xl font-bold mt-1">
-                Active ✅
-              </h3>
-              <p className="hidden md:block text-xs text-gray-500 mt-2">
-                Secure dashboard access
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-[#0b1c2c] to-[#12263a] backdrop-blur-md border border-gray-700 rounded-2xl p-3 md:p-6">
-              <p className="text-gray-400 text-[10px] md:text-sm">
-                Dashboards Available
-              </p>
-
-              <h3 className="text-sm md:text-2xl font-bold mt-1">
-                3 Reports
-              </h3>
-              <p className="hidden md:block text-xs text-gray-500 mt-2">
-                Salary • PO • Stock
-              </p>
-
-            </div>
-
-          </div>
-        </div>
         {/* ANALYTICS */}
         <div className="mt-8">
-          <h2 className="text-sm md:text-xl font-semibold mb-2 md:mb-4">
+          <h2 className="hidden md:block text-sm md:text-xl font-semibold mb-2 md:mb-4">
             Analytics
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-5">
-          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+
             {/* DASHBOARD VISITS */}
-            <div className="rounded-2xl p-2 md:p-6 bg-cyan-500/10 border border-cyan-500/30">
-              <p className="text-gray-400 text-[9px] md:text-sm">
+            <div className="rounded-2xl p-4 md:p-6 bg-cyan-500/10 border border-cyan-500/30">
+              <p className="text-gray-400 text-sm">
                 Dashboard Visits
               </p>
-              <div className="mt-2 space-y-1 text-cyan-400 text-xs md:text-base font-semibold">
-                <p>Salary : {dashboardVisits.salary}</p>
-                <p>PO : {dashboardVisits.po}</p>
-                <p>Stock : {dashboardVisits.stock}</p>
+
+              <div className="mt-4 space-y-2">
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span>Salary ({dashboardVisits.salary})</span>
+                    <span>{salaryPercent}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
+                    <div
+                      className="h-2 rounded-full bg-green-400"
+                      style={{
+                        width: `${salaryPercent}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span>PO ({dashboardVisits.po})</span>
+                    <span>{poPercent}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
+                    <div
+                      className="h-2 rounded-full bg-blue-400"
+                      style={{
+                        width: `${poPercent}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span>Stock ({dashboardVisits.stock})</span>
+                    <span>{stockPercent}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
+                    <div
+                      className="h-2 rounded-full bg-purple-400"
+                      style={{
+                        width: `${stockPercent}%`,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* LAST DASHBOARD */}
-            <div className=" hidden md:block rounded-2xl p-2 md:p-6 bg-purple-500/10 border border-purple-500/30">
-              <p className="text-gray-400 text-[9px] md:text-sm">
-                Last Dashboard
+            {/* MOST USED */}
+            <div className="rounded-2xl p-4 bg-indigo-500/10 border border-indigo-500/30">
+              <p className="text-gray-400 text-sm">
+                Most Used
               </p>
-              <h3 className="text-purple-400 text-xs md:text-2xl font-bold mt-2">
-                {lastDashboard}
-              </h3>
-            </div>
 
-            <div className="rounded-2xl p-2 md:p-6 bg-orange-500/10 border border-orange-500/30">
-              <p className="text-gray-400 text-[9px] md:text-sm">
-                Last Login
-              </p>
-              <h3 className="text-orange-400 text-xs md:text-xl font-bold mt-2">
-                {lastLogin}
+              <h3 className="text-indigo-400 text-xl md:text-3xl font-bold mt-2 capitalize">
+                {totalVisits > 0
+                  ? mostUsed?.[0]
+                  : "No Data"}
               </h3>
-            </div>
-
-            {/* LOGIN COUNT */}
-            <div className="rounded-2xl p-2 md:p-6 bg-green-500/10 border border-green-500/30">
-              <p className="text-gray-400 text-[9px] md:text-sm">
-                Login Count
+              <p className="hidden md:block text-gray-500 text-xs mt-2">
+                Most frequently opened dashboard
               </p>
-              <h3 className="text-green-400 text-sm md:text-2xl font-bold mt-2">
-                {loginCount}
-              </h3>
             </div>
 
             {/* SESSION DURATION */}
             <div className="rounded-2xl p-2 md:p-6 bg-blue-500/10 border border-blue-500/30">
-              <p className="text-gray-400 text-[9px] md:text-sm">
+              <p className="text-gray-400 text-sm">
                 Session Duration
               </p>
-              <h3 className="text-blue-400 text-sm md:text-2xl font-bold mt-2 ">
+              <h3 className="text-blue-400 text-xl md:text-3xl font-bold mt-2 ">
                 {sessionTime}
               </h3>
             </div>
-
           </div>
-
         </div>
-
 
       </div>
 
