@@ -157,7 +157,7 @@ export default function Login() {
 
           {/* ✅ TITLE */}
           <h2 className="text-xl font-semibold text-center mb-5">
-            Financial Intelligence Dashboard
+            FinSight
           </h2>
 
           {/* ✅ USERNAME */}
