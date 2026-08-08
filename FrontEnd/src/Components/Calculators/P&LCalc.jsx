@@ -18,7 +18,7 @@ export default function PLCalc() {
     investment > 0 ? (profitLoss / investment) * 100 : 0;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07111d] via-[#0d1f33] to-[#081018] p-4">
+    <div className="min-h-screen flex justify-center bg-gradient-to-br from-[#07111d] via-[#0d1f33] to-[#081018] p-4">
       <div className="w-full max-w-md lg:max-w-xl">
         <div className="bg-[#0b1c2c]/80 backdrop-blur-xl border border-slate-700 rounded-3xl shadow-2xl p-4 sm:p-6">
 
