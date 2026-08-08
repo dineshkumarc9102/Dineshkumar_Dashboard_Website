@@ -6,6 +6,7 @@ import {
   Mailbox,
   ChartCandlestick,
   LogOut,
+  Calculator,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../assets/DK logo.svg";
@@ -20,7 +21,7 @@ export default function MainLayout() {
   const timerRef = useRef(null);
   const [loadingPage, setLoadingPage] = useState(false);
   const [search, setSearch] = useState("");
-
+  const [openCalculator, setOpenCalculator] = useState(false);
   const { lastRefresh, onRefresh } = useDashboard();
 
   useEffect(() => {
@@ -50,7 +51,18 @@ export default function MainLayout() {
     if (v.includes("salary")) navigate("/salary");
     else if (v.includes("po")) navigate("/po");
     else if (v.includes("stock")) navigate("/stock");
-    else if (v.includes("home")) navigate("/");
+    else if (v.includes("basic")) navigate("/calculator/basic");
+    else if (v.includes("emi")) navigate("/calculator/emi");
+    else if (v.includes("sip")) navigate("/calculator/sip");
+    else if (v.includes("fd")) navigate("/calculator/fd");
+    else if (v.includes("inflation")) navigate("/calculator/inflation");
+    else if (v.includes("income") || v.includes("tax") || v.includes("it")) navigate("/calculator/it");
+    else if (v.includes("lumpsum")|| v.includes("lump")) navigate("/calculator/lump");
+    else if (v.includes("profit") || v.includes("loss") || v.includes("pl")) navigate("/calculator/pl");
+    else if (v.includes("ppf")) navigate("/calculator/ppf");
+    else if (v.includes("rd")) navigate("/calculator/rd");
+    else if (v.includes("stepup") || v.includes("step up")) navigate("/calculator/stepup");
+    else if (v.includes("swp")) navigate("/calculator/swp");
     else toast.error("No matching page ❌");
 
     setSearch("");
@@ -77,9 +89,7 @@ export default function MainLayout() {
   }, [location.pathname]);
 
   useEffect(() => {
-
     const logout = () => {
-      console.log("AUTO LOGOUT TRIGGERED ✅"); // debug
       localStorage.removeItem("token");
       toast.error("Session expired 🔒");
       navigate("/login");
@@ -90,16 +100,21 @@ export default function MainLayout() {
         clearTimeout(timerRef.current);
       }
 
-      timerRef.current = setTimeout(logout, 3 * 60 * 1000); // 3 min 
+      timerRef.current = setTimeout(logout, 3 * 60 * 1000);
     };
 
-    // ✅ Track activity
-    window.addEventListener("mousemove", resetTimer);
-    window.addEventListener("keydown", resetTimer);
-    window.addEventListener("click", resetTimer);
-    window.addEventListener("scroll", resetTimer); // ✅ add this
+    const events = [
+      "mousemove",
+      "keydown",
+      "click",
+      "scroll",
+      "touchstart",
+    ];
 
-    // ✅ Start timer
+    events.forEach((event) =>
+      window.addEventListener(event, resetTimer)
+    );
+
     resetTimer();
 
     return () => {
@@ -107,42 +122,42 @@ export default function MainLayout() {
         clearTimeout(timerRef.current);
       }
 
-      const events = [
-        "mousemove",
-        "keydown",
-        "click",
-        "scroll",
-        "touchstart"
-      ];
-
-      events.forEach(event =>
-        window.addEventListener(event, resetTimer)
+      events.forEach((event) =>
+        window.removeEventListener(event, resetTimer)
       );
-
-      return () => {
-        events.forEach(event =>
-          window.removeEventListener(
-            event,
-            resetTimer
-          )
-        );
-      };
     };
-
   }, [navigate]);
 
   const pageTitles = {
-    "/": "Home",
     "/salary": "Salary Dashboard",
     "/po": "PO Dashboard",
     "/stock": "Stock Dashboard",
-  };
 
+    "/calculator/basic": "Basic Calculator",
+    "/calculator/emi": "EMI Calculator",
+    "/calculator/fd": "FD Calculator",
+    "/calculator/inflation": "Inflation Calculator",
+    "/calculator/it": "Income Tax Calculator",
+    "/calculator/lump": "Lumpsum Calculator",
+    "/calculator/pl": "Profit & Loss Calculator",
+    "/calculator/ppf": "PPF Calculator",
+    "/calculator/rd": "RD Calculator",
+    "/calculator/sip": "SIP Calculator",
+    "/calculator/stepup": "Step Up SIP Calculator",
+    "/calculator/swp": "SWP Calculator"
+  }
   const currentPage = pageTitles[location.pathname] || "Dashboard";
 
   useEffect(() => {
     localStorage.setItem("lastDashboard", currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/calculator")) {
+      setOpenCalculator(true);
+    }
+  }, [location.pathname]);
+
   return (
     <div className="h-screen flex overflow-hidden relative">
 
@@ -154,7 +169,7 @@ export default function MainLayout() {
         {/* ✅ SIDEBAR */}
         {token && (
 
-          <div className="w-16 md:w-56 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col h-screen overflow-y-auto border-r border-gray-700">
+          <div className="w-16 md:w-56 transition-all duration-300 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col h-screen overflow-y-auto border-r border-gray-700">
 
             {/* LOGO */}
             <div className="p-3 border-b border-gray-700">
@@ -164,11 +179,11 @@ export default function MainLayout() {
               >
                 <img src={logo} className="w-9 h-9" />
                 <span className="hidden md:block text-white leading-tight">
-                  <span className="block text-sm font-semibold">
-                    Financial Intelligence
+                  <span className="block text-md font-semibold">
+                    FinSight
                   </span>
-                  <span className="block text-xs text-gray-400">
-                    Dashboard
+                  <span className="block text-[9px] text-gray-400">
+                    Financial Intelligence Dashboard
                   </span>
                 </span>
               </div>
@@ -176,6 +191,8 @@ export default function MainLayout() {
 
             {/* MENU */}
             <div className="flex-1 p-3 space-y-2">
+
+              {/* Main Menus */}
               {[
                 { name: "Salary", path: "/salary", icon: IndianRupee },
                 { name: "PO", path: "/po", icon: Mailbox },
@@ -189,7 +206,7 @@ export default function MainLayout() {
                     key={i}
                     onClick={() => navigate(item.path)}
                     className={`flex items-center gap-3 p-2 rounded-lg w-full transition-all duration-300
-                    ${active
+                     ${active
                         ? "bg-[#162b3d] text-white border-l-4 border-blue-400"
                         : "text-gray-400 hover:text-blue-400 hover:bg-[#162b3d]"
                       }`}
@@ -199,6 +216,77 @@ export default function MainLayout() {
                   </button>
                 );
               })}
+
+              {/* Calculator Parent Menu */}
+              <button
+                onClick={() => setOpenCalculator(!openCalculator)}
+                className={`flex items-center gap-3 p-2 rounded-lg w-full transition-all duration-300
+                ${location.pathname.startsWith("/calculator")
+                    ? "bg-[#162b3d] text-white border-l-4 border-blue-400"
+                    : "text-gray-400 hover:text-blue-400 hover:bg-[#162b3d]"
+                  }`}
+              >
+                <Calculator size={18} />
+                <span className="hidden md:block">Calculators</span>
+              </button>
+
+              {/* Calculator Submenu */}
+              <AnimatePresence>
+                {openCalculator && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden ml-2 md:ml-6 space-y-1"
+                  >
+                    {[
+                      { name: "Basic Calculator", path: "/calculator/basic" },
+                      { name: "EMI Calculator", path: "/calculator/emi" },
+                      { name: "FD Calculator", path: "/calculator/fd" },
+                      { name: "Inflation Calculator", path: "/calculator/inflation" },
+                      { name: "Income Tax Calculator", path: "/calculator/it" },
+                      { name: "Lumpsum Calculator", path: "/calculator/lump" },
+                      { name: "Profit & Loss Calculator", path: "/calculator/pl" },
+                      { name: "PPF Calculator", path: "/calculator/ppf" },
+                      { name: "RD Calculator", path: "/calculator/rd" },
+                      { name: "SIP Calculator", path: "/calculator/sip" },
+                      { name: "Step Up SIP Calculator", path: "/calculator/stepup" },
+                      { name: "SWP Calculator", path: "/calculator/swp" },
+
+                    ].map((item) => {
+                      const active = location.pathname === item.path;
+
+                      return (
+                        <button
+                          key={item.path}
+                          onClick={() => navigate(item.path)}
+                          className={`w-full text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-all
+                            ${active
+                              ? "bg-blue-500/20 text-blue-400 border-l-2 border-blue-400"
+                              : "text-gray-400 hover:text-white hover:bg-[#162b3d]"
+                            }`}
+                        >
+
+                          {/* Mobile */}
+                          <span className="md:hidden font-medium">
+                            {item.name
+                              .split(" ")
+                              .map(word => word.charAt(0))
+                              .join("")}
+                          </span>
+
+                          {/* Desktop */}
+                          <span className="hidden md:block truncate">
+                            {item.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </div>
 
             {/* LOGOUT */}
@@ -212,8 +300,6 @@ export default function MainLayout() {
                 <span className="hidden md:block">Logout</span>
               </button>
             </div>
-
-
           </div>
         )}
 
@@ -245,7 +331,6 @@ export default function MainLayout() {
                   className="w-full pl-8 pr-2 py-1 text-white bg-[#162b3d] rounded-lg text-xs"
                 />
               </div>
-
             </div>
 
             {/* ✅ BOTTOM */}
@@ -258,7 +343,6 @@ export default function MainLayout() {
 
               {/* ✅ BUTTONS */}
               <div className="flex gap-2">
-
                 {/* ✅ REFRESH */}
                 <button
                   onClick={onRefresh}
@@ -268,14 +352,11 @@ export default function MainLayout() {
                   <span className="hidden md:block text-xs">Refresh</span>
                 </button>
               </div>
-
             </div>
           </div>
 
-
           {/* ✅ CONTENT */}
           <div className="flex-1 relative overflow-hidden">
-
             {loadingPage && (
               <motion.div
                 initial={{ width: 0 }}
@@ -284,23 +365,12 @@ export default function MainLayout() {
                 className="absolute top-0 left-0 h-[3px] bg-blue-500 z-50"
               />
             )}
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="h-full"
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
-
+            <div className="h-full">
+              <Outlet />
+            </div>
           </div>
-
         </div>
       </div>
     </div >
   );
-}
+}  
