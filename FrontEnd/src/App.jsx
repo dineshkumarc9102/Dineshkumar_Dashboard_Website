@@ -5,6 +5,7 @@ import Home from "./Components/Home";
 import Salary from "./Components/Salary";
 import PO from "./Components/Po";
 import Stock from "./Components/Stock";
+import GNS from "./Components/G&S";
 import Login from "./Components/Login";
 import PrivateRoute from "./Components/PrivateRoute";
 import BasicCalc from "./Components/Calculators/BasicCalc";
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="salary" element={<Salary />} />
         <Route path="po" element={<PO />} />
         <Route path="stock" element={<Stock />} />
+        <Route path="gns" element={<GNS />} />
         <Route path="/calculator">
           <Route path="basic" element={<BasicCalc />} />
           <Route path="emi" element={<EMICalc />} />
