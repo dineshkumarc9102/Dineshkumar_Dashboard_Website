@@ -6,6 +6,8 @@ import {
   Mailbox,
   ChartCandlestick,
   CheckCheck,
+  Coins,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Home() {
@@ -57,7 +59,7 @@ export default function Home() {
       color: "from-green-500 to-emerald-500",
     },
     {
-      title: "PO",
+      title: "Post Office",
       icon: Mailbox,
       route: "/po",
       color: "from-blue-500 to-cyan-500",
@@ -67,6 +69,12 @@ export default function Home() {
       icon: ChartCandlestick,
       route: "/stock",
       color: "from-purple-500 to-pink-500",
+    },
+    {
+      title: "Physical G&S",
+      icon: Coins,
+      route: "/gns",
+      color: "from-yellow-500 to-orange-500",
     },
   ];
 
@@ -102,6 +110,7 @@ export default function Home() {
       salary: visits["/salary"] || 0,
       po: visits["/po"] || 0,
       stock: visits["/stock"] || 0,
+      gns: visits["/gns"] || 0,
     });
 
     const interval = setInterval(() => {
@@ -140,12 +149,16 @@ export default function Home() {
     salary: 0,
     po: 0,
     stock: 0,
+    gns: 0,
   });
 
-  const totalVisits =
+  const totalVisits = Math.max(
     dashboardVisits.salary +
     dashboardVisits.po +
-    dashboardVisits.stock || 1;
+    dashboardVisits.stock +
+    dashboardVisits.gns,
+    1
+  );
 
   const salaryPercent = Math.round(
     (dashboardVisits.salary / totalVisits) * 100
@@ -157,6 +170,10 @@ export default function Home() {
 
   const stockPercent = Math.round(
     (dashboardVisits.stock / totalVisits) * 100
+  );
+
+  const gnsPercent = Math.round(
+    (dashboardVisits.gns / totalVisits) * 100
   );
 
   const mostUsed =
@@ -245,7 +262,7 @@ export default function Home() {
           <h2 className="text-lg md:text-xl font-semibold mb-4">
             Dashboards
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 ">
             {cards.map((card) => {
               const Icon = card.icon;
 
@@ -253,36 +270,52 @@ export default function Home() {
                 <motion.div
                   key={card.title}
                   whileHover={{
-                    scale: 1.03,
-                    y: -4,
-                    boxShadow:
-                      "0px 10px 30px rgba(59,130,246,0.3)"
+                    y: -8,
+                    scale: 1.02,
                   }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    navigate(card.route);
-                  }}
-                  className={`cursor-pointer rounded-xl p-2 md:p-6
-                    border border-white/10 hover:shadow-2xl
-                    bg-gradient-to-r ${card.color} shadow-xl
-                    transition-all duration-300`}
+                  onClick={() => navigate(card.route)}
+                  className={`
+                            relative cursor-pointer overflow-hidden
+                            rounded-2xl md:rounded-3xl p-4 md:p-6 min-h-[120px] md:min-h-[180px]
+                            bg-gradient-to-br ${card.color}
+                            shadow-xl border border-white/10
+                            transition-all duration-300
+                            group`}
                 >
-                  <div className="flex items-center justify-center gap-3 md:gap-4 text-center">
+                  {/* Glow */}
+                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                    <Icon
-                      size={28}
-                      className="md:w-8 md:h-8"
-                    />
+                  <div className="relative h-full flex flex-col justify-between">
 
-                    <div>
-                      <h3 className="font-semibold text-sm md:text-lg">
-                        {card.title}
-                      </h3>
+                    {/* Top */}
+                    <div className="flex items-center md:block gap-3">
+                      <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
+                        <Icon
+                          size={20}
+                          className="md:w-7 md:h-7 text-white"
+                        />
+                      </div>
 
-                      <p className="hidden md:block text-sm opacity-90">
-                        Open Dashboard
-                      </p>
+                      <div>
+                        <h3 className="text-base md:text-xl font-bold text-white">
+                          {card.title}
+                        </h3>
+                      </div>
                     </div>
+
+                    {/* Bottom */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm font-medium text-white/90">
+                        Open Dashboard
+                      </span>
+
+                      <ArrowRight
+                        size={18}
+                        className=" transition-transform duration-300 group-hover:translate-x-1 "
+                      />
+                    </div>
+
                   </div>
                 </motion.div>
               );
@@ -324,7 +357,7 @@ export default function Home() {
 
                 <div>
                   <div className="flex justify-between text-xs">
-                    <span>PO ({dashboardVisits.po})</span>
+                    <span>Post Office ({dashboardVisits.po})</span>
                     <span>{poPercent}%</span>
                   </div>
 
@@ -353,6 +386,23 @@ export default function Home() {
                     />
                   </div>
                 </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span>Physical G&S ({dashboardVisits.gns})</span>
+                    <span>{gnsPercent}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
+                    <div
+                      className="h-2 rounded-full bg-yellow-400"
+                      style={{
+                        width: `${gnsPercent}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
               </div>
             </div>
 
