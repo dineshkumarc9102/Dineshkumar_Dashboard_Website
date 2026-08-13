@@ -7,6 +7,7 @@ import {
   ChartCandlestick,
   LogOut,
   Calculator,
+  Coins,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../assets/DK logo.svg";
@@ -49,8 +50,9 @@ export default function MainLayout() {
     const v = value.toLowerCase();
 
     if (v.includes("salary")) navigate("/salary");
-    else if (v.includes("po")) navigate("/po");
+    else if (v.includes("post")|| v.includes("po")) navigate("/po");
     else if (v.includes("stock")) navigate("/stock");
+    else if (v.includes("gold") || v.includes("silver")) navigate("/gns");
     else if (v.includes("basic")) navigate("/calculator/basic");
     else if (v.includes("emi")) navigate("/calculator/emi");
     else if (v.includes("sip")) navigate("/calculator/sip");
@@ -74,7 +76,8 @@ export default function MainLayout() {
     if (
       page === "/salary" ||
       page === "/po" ||
-      page === "/stock"
+      page === "/stock" ||
+      page === "/gns"
     ) {
       const visits =
         JSON.parse(localStorage.getItem("dashboardVisits")) || {};
@@ -130,8 +133,9 @@ export default function MainLayout() {
 
   const pageTitles = {
     "/salary": "Salary Dashboard",
-    "/po": "PO Dashboard",
+    "/po": "Post Office Dashboard",
     "/stock": "Stock Dashboard",
+    "/gns": "Physical G&S Dashboard",
 
     "/calculator/basic": "Basic Calculator",
     "/calculator/emi": "EMI Calculator",
@@ -195,8 +199,9 @@ export default function MainLayout() {
               {/* Main Menus */}
               {[
                 { name: "Salary", path: "/salary", icon: IndianRupee },
-                { name: "PO", path: "/po", icon: Mailbox },
+                { name: "Post Office", path: "/po", icon: Mailbox },
                 { name: "Stock", path: "/stock", icon: ChartCandlestick },
+                { name: "Physical G&S", path: "/gns", icon: Coins },
               ].map((item, i) => {
                 const Icon = item.icon;
                 const active = location.pathname === item.path;
