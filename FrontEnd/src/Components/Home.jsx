@@ -182,7 +182,7 @@ export default function Home() {
 
 
   return (
-    <div className="h-full overflow-y-auto text-white relative px-4 md:px-8 py-3 md:py-10">
+    <div className="h-full overflow-y-auto text-white relative px-4 md:px-8 py-3 md:py-1">
       {/* GRID */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#ffffff20_1px,transparent_1px),linear-gradient(90deg,#ffffff20_1px,transparent_1px)] bg-[size:40px_40px]" />
 
@@ -190,8 +190,12 @@ export default function Home() {
       <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-blue-500/20 blur-3xl bottom-20 left-10 animate-pulse" />
       <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-purple-500/20 blur-3xl top-20 right-10 animate-pulse" />
 
-      <div className="relative z-10 max-w-5xl mx-auto">
-
+      <motion.div
+        className="relative z-10 max-w-5xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {/* WELCOME */}
         <motion.div
           initial={{
@@ -239,9 +243,17 @@ export default function Home() {
                   Login Count
                 </p>
 
-                <p className="font-bold text-green-400">
+                <motion.p
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200
+                  }}
+                  className="font-bold text-green-400"
+                >
                   {loginCount}
-                </p>
+                </motion.p>
               </div>
 
               <div className="bg-[#162b3d]/40 rounded-lg p-4 text-center">
@@ -259,21 +271,41 @@ export default function Home() {
 
         {/* DASHBOARDS */}
         <div className="mb-8">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">
+          <motion.h2
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="text-lg md:text-xl font-semibold mb-4"
+          >
             Dashboards
-          </h2>
+          </motion.h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 ">
-            {cards.map((card) => {
+            {cards.map((card, index) => {
               const Icon = card.icon;
 
               return (
                 <motion.div
                   key={card.title}
+                  initial={{
+                    opacity: 0,
+                    y: 50
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1
+                  }}
                   whileHover={{
                     y: -8,
-                    scale: 1.02,
+                    scale: 1.03,
+                    rotateX: 5
                   }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{
+                    scale: 0.97
+                  }}
                   onClick={() => navigate(card.route)}
                   className={`
                             relative cursor-pointer overflow-hidden
@@ -291,10 +323,21 @@ export default function Home() {
                     {/* Top */}
                     <div className="flex items-center md:block gap-3">
                       <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
-                        <Icon
-                          size={20}
-                          className="md:w-7 md:h-7 text-white"
-                        />
+                        <motion.div
+                          whileHover={{
+                            rotate: 15,
+                            scale: 1.2
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300
+                          }}
+                        >
+                          <Icon
+                            size={20}
+                            className="md:w-7 md:h-7 text-white"
+                          />
+                        </motion.div>
                       </div>
 
                       <div>
@@ -310,10 +353,17 @@ export default function Home() {
                         Open Dashboard
                       </span>
 
-                      <ArrowRight
-                        size={18}
-                        className=" transition-transform duration-300 group-hover:translate-x-1 "
-                      />
+                      <motion.div
+                        animate={{
+                          x: [0, 5, 0]
+                        }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.5
+                        }}
+                      >
+                        <ArrowRight size={18} />
+                      </motion.div>
                     </div>
 
                   </div>
@@ -329,8 +379,13 @@ export default function Home() {
             Analytics
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             {/* DASHBOARD VISITS */}
             <div className="rounded-2xl p-4 md:p-6 bg-cyan-500/10 border border-cyan-500/30">
               <p className="text-gray-400 text-sm">
@@ -431,10 +486,10 @@ export default function Home() {
                 {sessionTime}
               </h3>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-      </div>
+      </motion.div>
 
       {/* DESKTOP FLOATING DOTS */}
       <div className="hidden md:block">
