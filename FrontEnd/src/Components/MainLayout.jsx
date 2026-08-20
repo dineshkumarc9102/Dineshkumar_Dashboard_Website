@@ -8,6 +8,7 @@ import {
   LogOut,
   Calculator,
   Coins,
+  Menu, X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../assets/DK logo.svg";
@@ -24,6 +25,8 @@ export default function MainLayout() {
   const [search, setSearch] = useState("");
   const [openCalculator, setOpenCalculator] = useState(false);
   const { lastRefresh, onRefresh } = useDashboard();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
   useEffect(() => {
     setLoadingPage(true);
@@ -50,7 +53,7 @@ export default function MainLayout() {
     const v = value.toLowerCase();
 
     if (v.includes("salary")) navigate("/salary");
-    else if (v.includes("post")|| v.includes("po")) navigate("/po");
+    else if (v.includes("post") || v.includes("po")) navigate("/po");
     else if (v.includes("stock")) navigate("/stock");
     else if (v.includes("gold") || v.includes("silver")) navigate("/gns");
     else if (v.includes("basic")) navigate("/calculator/basic");
@@ -59,7 +62,7 @@ export default function MainLayout() {
     else if (v.includes("fd")) navigate("/calculator/fd");
     else if (v.includes("inflation")) navigate("/calculator/inflation");
     else if (v.includes("income") || v.includes("tax") || v.includes("it")) navigate("/calculator/it");
-    else if (v.includes("lumpsum")|| v.includes("lump")) navigate("/calculator/lump");
+    else if (v.includes("lumpsum") || v.includes("lump")) navigate("/calculator/lump");
     else if (v.includes("profit") || v.includes("loss") || v.includes("pl")) navigate("/calculator/pl");
     else if (v.includes("ppf")) navigate("/calculator/ppf");
     else if (v.includes("rd")) navigate("/calculator/rd");
@@ -162,34 +165,65 @@ export default function MainLayout() {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
   return (
     <div className="h-screen flex overflow-hidden relative">
 
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#081421] via-[#0b1c2c] to-[#020617]" />
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       <div className="relative flex w-full">
-
-        {/* ✅ SIDEBAR */}
         {token && (
 
-          <div className="w-16 md:w-56 transition-all duration-300 bg-[#0b1c2c]/70 backdrop-blur-md flex flex-col h-screen overflow-y-auto border-r border-gray-700">
+          <div
+            className={`
+                      fixed md:relative 
+                      top-0 left-0 z-50
+                      h-screen w-56
+                      bg-[#0b1c2c]/95
+                      backdrop-blur-md
+                      border-r border-gray-700
+                      transition-transform duration-300
+                      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+                      md:translate-x-0
+                      `}
+          >
+
+            {/* ✅ SIDEBAR */}
 
             {/* LOGO */}
             <div className="p-3 border-b border-gray-700">
-              <div
-                onClick={() => navigate("/")}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <img src={logo} className="w-9 h-9" />
-                <span className="hidden md:block text-white leading-tight">
-                  <span className="block text-md font-semibold">
-                    FinSight
+              <div className="flex items-center justify-between">
+                <div
+                  onClick={() => navigate("/")}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <img src={logo} className="w-9 h-9" alt="FinSight Logo" />
+                  <span className=" text-white leading-tight">
+                    <span className="block text-md font-semibold">
+                      FinSight
+                    </span>
+                    <span className="block text-[9px] text-gray-400">
+                      Financial Intelligence Dashboard
+                    </span>
                   </span>
-                  <span className="block text-[9px] text-gray-400">
-                    Financial Intelligence Dashboard
-                  </span>
-                </span>
+                </div>
+
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="md:hidden text-white"
+                >
+                  <X size={20} />
+                </button>
               </div>
             </div>
 
@@ -209,7 +243,11 @@ export default function MainLayout() {
                 return (
                   <button
                     key={i}
-                    onClick={() => navigate(item.path)}
+                    onClick={() => {
+                      navigate(item.path);
+                      setSidebarOpen(false);
+                    }}
+
                     className={`flex items-center gap-3 p-2 rounded-lg w-full transition-all duration-300
                      ${active
                         ? "bg-[#162b3d] text-white border-l-4 border-blue-400"
@@ -217,7 +255,7 @@ export default function MainLayout() {
                       }`}
                   >
                     <Icon size={18} />
-                    <span className="hidden md:block">{item.name}</span>
+                    <span>{item.name}</span>
                   </button>
                 );
               })}
@@ -232,7 +270,7 @@ export default function MainLayout() {
                   }`}
               >
                 <Calculator size={18} />
-                <span className="hidden md:block">Calculators</span>
+                <span>Calculators</span>
               </button>
 
               {/* Calculator Submenu */}
@@ -265,7 +303,10 @@ export default function MainLayout() {
                       return (
                         <button
                           key={item.path}
-                          onClick={() => navigate(item.path)}
+                          onClick={() => {
+                            navigate(item.path);
+                            setSidebarOpen(false);
+                          }}
                           className={`w-full text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-all
                             ${active
                               ? "bg-blue-500/20 text-blue-400 border-l-2 border-blue-400"
@@ -274,11 +315,8 @@ export default function MainLayout() {
                         >
 
                           {/* Mobile */}
-                          <span className="md:hidden font-medium">
-                            {item.name
-                              .split(" ")
-                              .map(word => word.charAt(0))
-                              .join("")}
+                          <span className="font-medium">
+                            {item.name}
                           </span>
 
                           {/* Desktop */}
@@ -302,7 +340,7 @@ export default function MainLayout() {
                 className="flex items-center gap-3 w-full p-2 text-gray-300 hover:text-red-400"
               >
                 <LogOut size={18} />
-                <span className="hidden md:block">Logout</span>
+                <span>Logout</span>
               </button>
             </div>
           </div>
@@ -318,9 +356,19 @@ export default function MainLayout() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
 
               {/* ✅ TITLE */}
-              <h1 className="text-white text-sm md:text-lg font-semibold truncate">
-                {currentPage}
-              </h1>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="md:hidden text-white"
+                >
+                  <Menu size={22} />
+                </button>
+
+                <h1 className="text-white text-sm md:text-lg font-semibold truncate">
+                  {currentPage}
+                </h1>
+              </div>
+
 
               {/* ✅ SEARCH */}
               <div className="relative w-full md:w-52">
