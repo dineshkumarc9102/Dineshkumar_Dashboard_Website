@@ -109,18 +109,18 @@ export default function Login() {
             className="absolute inset-0 bg-green-500/20 backdrop-blur-sm z-50 flex items-center justify-center"
           >
             <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1.4 }}
-              transition={{ duration: 0.6 }}
-              className="text-green-400 text-2xl font-semibold"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
             >
-              ✔ Access Granted
+              <CheckCircle size={80} className="text-green-400" />
+              <p className="text-green-400">Login Successful</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ✅ GRID BACKGROUND */}
+
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#ffffff20_1px,transparent_1px),linear-gradient(90deg,#ffffff20_1px,transparent_1px)] bg-[size:40px_40px]" />
 
       {/* ✅ GLOW */}
@@ -145,8 +145,14 @@ export default function Login() {
           {/* ✅ LOGO FIXED ✅ */}
           <motion.div
             className="flex justify-center mb-4"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            animate={{
+              scale: [1, 1.05, 1],
+              y: [0, -5, 0],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+            }}
           >
             <img
               src={logo}
@@ -156,9 +162,22 @@ export default function Login() {
           </motion.div>
 
           {/* ✅ TITLE */}
-          <h2 className="text-xl font-semibold text-center mb-5">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-xl font-semibold text-center mb-2"
+          >
             FinSight
-          </h2>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center text-xs text-gray-400 mb-5"
+          >
+            Financial Intelligence Dashboard
+          </motion.p>
 
           {/* ✅ USERNAME */}
           <input
@@ -217,11 +236,27 @@ export default function Login() {
 
           {/* ✅ BUTTON */}
           <motion.button
-            whileTap={{ scale: 0.95 }}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: "0 0 25px rgba(59,130,246,0.6)"
+            }}
+            whileTap={{ scale: 0.97 }}
+
             onClick={handleLogin}
             className="w-full p-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? <div className="flex items-center justify-center gap-2">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1,
+                  ease: "linear"
+                }}
+                className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+              />
+              Logging in...
+            </div> : "Login"}
           </motion.button>
           {loading && (
             <div className="mt-4">
