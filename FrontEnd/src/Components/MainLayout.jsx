@@ -186,7 +186,7 @@ export default function MainLayout() {
 
           <div
             className={`
-                      fixed md:relative 
+                      fixed lg:relative 
                       top-0 left-0 z-50
                       h-screen w-56
                       bg-[#0b1c2c]/95
@@ -194,7 +194,7 @@ export default function MainLayout() {
                       border-r border-gray-700
                       transition-transform duration-300
                       ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                      md:translate-x-0
+                      lg:translate-x-0
                       `}
           >
 
@@ -359,7 +359,7 @@ export default function MainLayout() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="md:hidden text-white"
+                  className="lg:hidden text-white"
                 >
                   <Menu size={22} />
                 </button>
