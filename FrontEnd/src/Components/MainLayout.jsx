@@ -220,7 +220,7 @@ export default function MainLayout() {
 
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="md:hidden text-white"
+                  className="lg:hidden text-white"
                 >
                   <X size={20} />
                 </button>
