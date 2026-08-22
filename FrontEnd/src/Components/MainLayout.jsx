@@ -314,13 +314,8 @@ export default function MainLayout() {
                             }`}
                         >
 
-                          {/* Mobile */}
-                          <span className="font-medium">
-                            {item.name}
-                          </span>
-
                           {/* Desktop */}
-                          <span className="hidden md:block truncate">
+                          <span className="truncate">
                             {item.name}
                           </span>
                         </button>
