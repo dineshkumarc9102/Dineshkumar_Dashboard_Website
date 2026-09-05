@@ -5,11 +5,20 @@ import {
   IndianRupee,
   Mailbox,
   ChartCandlestick,
-  CheckCheck,
   Coins,
   ArrowRight,
 } from "lucide-react";
 
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  LabelList
+} from "recharts";
 export default function Home() {
   const navigate = useNavigate();
   const [lastLogin, setLastLogin] = useState("Never");
@@ -180,6 +189,40 @@ export default function Home() {
     Object.entries(dashboardVisits)
       .sort((a, b) => b[1] - a[1])[0];
 
+  const chartData = [
+    {
+      name: "Salary Dashboard",
+      visits: dashboardVisits.salary,
+    },
+    {
+      name: "Post Office Dashboard",
+      visits: dashboardVisits.po,
+    },
+    {
+      name: "Stock Dashboard",
+      visits: dashboardVisits.stock,
+    },
+    {
+      name: "Physical G&S Dashboard",
+      visits: dashboardVisits.gns,
+    },
+  ];
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+
+    return (
+      <div className="bg-[#0b1c2c] border border-cyan-500/30 px-3 py-2 rounded-xl shadow-lg">
+        <p className="text-cyan-400 font-semibold">
+          {payload[0].payload.name}
+        </p>
+
+        <p className="text-white text-sm">
+          Visits: {payload[0].value}
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div className="h-full overflow-y-auto text-white relative px-4 md:px-8 py-3 md:py-1">
@@ -196,6 +239,7 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
+
         {/* WELCOME */}
         <motion.div
           initial={{
@@ -217,7 +261,7 @@ export default function Home() {
             duration: 0.3,
             ease: "easeOut"
           }}
-          className="mb-5 bg-[#0b1c2c]/60 backdrop-blur-md border border-gray-700 rounded-2xl p-3 md:p-8"
+          className="mt-5 mb-5 bg-[#0b1c2c]/60 backdrop-blur-md border border-gray-700 rounded-2xl p-3 md:p-8"
         >
           <div className="space-y-3">
             <h1 className="text-center md:text-left text-xl sm:text-3xl md:text-5xl font-bold">
@@ -236,36 +280,6 @@ export default function Home() {
                 {lastLogin}
               </span>
             </p>
-
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="bg-[#162b3d]/40 rounded-lg p-4 text-center">
-                <p className="text-gray-400 text-xs">
-                  Login Count
-                </p>
-
-                <motion.p
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 200
-                  }}
-                  className="font-bold text-green-400"
-                >
-                  {loginCount}
-                </motion.p>
-              </div>
-
-              <div className="bg-[#162b3d]/40 rounded-lg p-4 text-center">
-                <p className="text-gray-400 text-xs">
-                  Session
-                </p>
-                <div className="flex items-center justify-center gap-2 text-green-400 font-bold">                  <CheckCheck size={18} />
-                  <span>Active</span>
-                </div>
-              </div>
-
-            </div>
           </div>
         </motion.div>
 
@@ -295,8 +309,7 @@ export default function Home() {
                     y: 0
                   }}
                   transition={{
-                    duration: 0.5,
-                    delay: index * 0.1
+                    duration: 0.2,
                   }}
                   whileHover={{
                     y: -8,
@@ -355,7 +368,7 @@ export default function Home() {
 
                       <motion.div
                         animate={{
-                          x: [0, 5, 0]
+                          x: [0, 50]
                         }}
                         transition={{
                           repeat: Infinity,
@@ -373,6 +386,7 @@ export default function Home() {
           </div>
         </div>
 
+
         {/* ANALYTICS */}
         <div className="mt-8">
           <h2 className="hidden md:block text-sm md:text-xl font-semibold mb-2 md:mb-4">
@@ -380,112 +394,176 @@ export default function Home() {
           </h2>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5"
+            className="grid grid-cols-1  gap-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 50
+              }}
+              animate={{
+                opacity: 1,
+                y: 0
+              }}
+              transition={{
+                duration: 0.2,
+              }}
+              whileHover={{
+                y: -8,
+                scale: 1.03,
+                rotateX: 5
+              }} className="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+              <div className="bg-[#162b3d]/50 rounded-xl p-4">
+                <p className="text-xs text-gray-400">
+                  Total Visits
+                </p>
+                <h3 className="text-2xl font-bold text-cyan-400">
+                  {totalVisits}
+                </h3>
+              </div>
+
+              <div className="bg-[#162b3d]/50 rounded-xl p-4">
+                <p className="text-xs text-gray-400">
+                  Login Count
+                </p>
+                <h3 className="text-2xl font-bold text-green-400">
+                  {loginCount}
+                </h3>
+              </div>
+
+              <div className="bg-[#162b3d]/50 rounded-xl p-4">
+                <p className="text-xs text-gray-400">
+                  Session Time
+                </p>
+                <h3 className="text-lg font-bold text-blue-400">
+                  {sessionTime}
+                </h3>
+              </div>
+
+              <div className="bg-[#162b3d]/50 rounded-xl p-4">
+                <p className="text-xs text-gray-400">
+                  Most Used
+                </p>
+                <h3 className="text-xl font-bold text-purple-400 capitalize">
+                  {mostUsed?.[0] || "-"}
+                </h3>
+              </div>
+            </motion.div>
+
             {/* DASHBOARD VISITS */}
-            <div className="rounded-2xl p-4 md:p-6 bg-cyan-500/10 border border-cyan-500/30">
-              <p className="text-gray-400 text-sm">
-                Dashboard Visits
-              </p>
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 50
+              }}
+              animate={{
+                opacity: 1,
+                y: 0
+              }}
+              transition={{
+                duration: 0.2,
+              }}
+              whileHover={{
+                y: -8,
+                scale: 1.03,
+                rotateX: 5
+              }}
+              className="rounded-2xl p-4 md:p-6 bg-cyan-500/10 border border-cyan-500/30 backdrop-blur-md shadow-lg shadow-cyan-500/10">
+              <div>
+                <p className="text-gray-400 mb-2">
+                  Dashboard Usage
+                </p>
 
-              <div className="mt-4 space-y-2">
-
-                <div>
-                  <div className="flex justify-between text-xs">
-                    <span>Salary ({dashboardVisits.salary})</span>
-                    <span>{salaryPercent}%</span>
-                  </div>
-
-                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
-                    <div
-                      className="h-2 rounded-full bg-green-400"
-                      style={{
-                        width: `${salaryPercent}%`,
+                <div className="h-56 md:h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={chartData}
+                      margin={{
+                        top: 20,
+                        right: 10,
+                        left: 0,
+                        bottom: 0,
                       }}
-                    />
-                  </div>
-                </div>
+                    >
+                      <defs>
+                        <linearGradient
+                          id="barGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#22d3ee"
+                          />
 
-                <div>
-                  <div className="flex justify-between text-xs">
-                    <span>Post Office ({dashboardVisits.po})</span>
-                    <span>{poPercent}%</span>
-                  </div>
+                          <stop
+                            offset="100%"
+                            stopColor="#0ea5e9"
+                          />
+                        </linearGradient>
+                      </defs>
 
-                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
-                    <div
-                      className="h-2 rounded-full bg-blue-400"
-                      style={{
-                        width: `${poPercent}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#1e293b"
+                      />
 
-                <div>
-                  <div className="flex justify-between text-xs">
-                    <span>Stock ({dashboardVisits.stock})</span>
-                    <span>{stockPercent}%</span>
-                  </div>
+                      <XAxis
+                        dataKey="name"
+                        tick={{
+                          fill: "#94a3b8",
+                          fontSize: window.innerWidth < 768 ? 10 : 12,
+                        }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
 
-                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
-                    <div
-                      className="h-2 rounded-full bg-purple-400"
-                      style={{
-                        width: `${stockPercent}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+                      <YAxis
+                        width={25}
+                        tick={{
+                          fill: "#94a3b8",
+                          fontSize: 10,
+                        }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
 
-                <div>
-                  <div className="flex justify-between text-xs">
-                    <span>Physical G&S ({dashboardVisits.gns})</span>
-                    <span>{gnsPercent}%</span>
-                  </div>
+                      <Tooltip
+                        content={<CustomTooltip />}
+                        cursor={{
+                          fill: "rgba(34,211,238,0.08)",
+                        }}
+                      />
 
-                  <div className="w-full h-2 bg-gray-700 rounded-full mt-1">
-                    <div
-                      className="h-2 rounded-full bg-yellow-400"
-                      style={{
-                        width: `${gnsPercent}%`,
-                      }}
-                    />
-                  </div>
+                      <Bar
+  dataKey="visits"
+  radius={[10, 10, 0, 0]}
+  fill="url(#barGradient)"
+  animationDuration={1200}
+>
+  <LabelList
+    dataKey="visits"
+    position="top"
+    fill="#e2e8f0"
+    fontSize={11}
+  />
+</Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
 
               </div>
-            </div>
+            </motion.div>
 
-            {/* MOST USED */}
-            <div className="rounded-2xl p-4 bg-indigo-500/10 border border-indigo-500/30">
-              <p className="text-gray-400 text-sm">
-                Most Used
-              </p>
 
-              <h3 className="text-indigo-400 text-xl md:text-3xl font-bold mt-2 capitalize">
-                {totalVisits > 0
-                  ? mostUsed?.[0]
-                  : "No Data"}
-              </h3>
-              <p className="hidden md:block text-gray-500 text-xs mt-2">
-                Most frequently opened dashboard
-              </p>
-            </div>
-
-            {/* SESSION DURATION */}
-            <div className="rounded-2xl p-2 md:p-6 bg-blue-500/10 border border-blue-500/30">
-              <p className="text-gray-400 text-sm">
-                Session Duration
-              </p>
-              <h3 className="text-blue-400 text-xl md:text-3xl font-bold mt-2 ">
-                {sessionTime}
-              </h3>
-            </div>
           </motion.div>
         </div>
 
