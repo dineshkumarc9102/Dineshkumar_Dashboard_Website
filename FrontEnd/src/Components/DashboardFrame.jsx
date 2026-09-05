@@ -1,5 +1,5 @@
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, } from "react";
+import { useOutletContext } from "react-router-dom";
 import toast from "react-hot-toast";
 import { RefreshCcw, ExternalLink } from "lucide-react";
 import { useDashboard } from "../Context/DashboardContext";
@@ -59,6 +59,8 @@ export default function DashboardFrame({
         setOnOpen(() => handleOpen);
     }, []);
 
+    const { zoom } = useOutletContext();
+
     return (
         <div className="bg-[#081421] h-full flex flex-col">
             <div className="flex-1 p-2">
@@ -78,6 +80,13 @@ export default function DashboardFrame({
                         }
                         className="w-full h-full border-0"
                         title={title}
+                        style={{
+                            width: `${100 / zoom}%`,
+                            height: `${100 / zoom}%`,
+                            transform: `scale(${zoom})`,
+                            transformOrigin: "top left",
+                            border: "none",
+                        }}
                         onLoad={() => setLoading(false)}
                     ></iframe>
                 </div>
