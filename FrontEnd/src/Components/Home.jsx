@@ -544,18 +544,18 @@ export default function Home() {
                       />
 
                       <Bar
-  dataKey="visits"
-  radius={[10, 10, 0, 0]}
-  fill="url(#barGradient)"
-  animationDuration={1200}
->
-  <LabelList
-    dataKey="visits"
-    position="top"
-    fill="#e2e8f0"
-    fontSize={11}
-  />
-</Bar>
+                        dataKey="visits"
+                        radius={[10, 10, 0, 0]}
+                        fill="url(#barGradient)"
+                        animationDuration={1200}
+                      >
+                        <LabelList
+                          dataKey="visits"
+                          position="top"
+                          fill="#e2e8f0"
+                          fontSize={11}
+                        />
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
