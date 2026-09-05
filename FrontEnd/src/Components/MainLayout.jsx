@@ -1,5 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
+  ZoomIn,
+  ZoomOut,
   RefreshCcw,
   Search,
   IndianRupee,
@@ -27,6 +29,19 @@ export default function MainLayout() {
   const { lastRefresh, onRefresh } = useDashboard();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [zoom, setZoom] = useState(1);
+
+  const zoomIn = () => {
+    setZoom((prev) => Math.min(prev + 0.1, 2));
+  };
+
+  const zoomOut = () => {
+    setZoom((prev) => Math.max(prev - 0.1, 0.2));
+  };
+
+  const resetZoom = () => {
+    setZoom(1);
+  };
 
   useEffect(() => {
     setLoadingPage(true);
@@ -169,6 +184,16 @@ export default function MainLayout() {
     setSidebarOpen(false);
   }, [location.pathname]);
 
+  const isDashboardPage = [
+    "/salary",
+    "/po",
+    "/stock",
+    "/gns",
+  ].includes(location.pathname);
+  useEffect(() => {
+    setZoom(1);
+  }, [location.pathname]);
+  
   return (
     <div className="h-screen flex overflow-hidden relative">
 
@@ -365,6 +390,7 @@ export default function MainLayout() {
               </div>
 
 
+
               {/* ✅ SEARCH */}
               <div className="relative w-full md:w-52">
                 <Search
@@ -391,14 +417,40 @@ export default function MainLayout() {
 
               {/* ✅ BUTTONS */}
               <div className="flex gap-2">
-                {/* ✅ REFRESH */}
-                <button
-                  onClick={onRefresh}
-                  className="flex items-center gap-1 px-2 py-1 md:px-3 md:py-1 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d]"
-                >
-                  <RefreshCcw size={14} md:size={16} />
-                  <span className="hidden md:block text-xs">Refresh</span>
-                </button>
+                {isDashboardPage && (
+                  <>
+                    <button
+                      onClick={zoomOut}
+                      className="p-1 rounded-lg text-gray-300 hover:text-yellow-400 hover:bg-[#162b3d]"
+                    >
+                      <ZoomOut size={16} />
+                    </button>
+
+                    <button
+                      onClick={resetZoom}
+                      className="px-2 text-xs rounded-lg text-gray-300 hover:text-blue-400 hover:bg-[#162b3d]"
+                    >
+                      {Math.round(zoom * 100)}%
+                    </button>
+
+                    <button
+                      onClick={zoomIn}
+                      className="p-1 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d]"
+                    >
+                      <ZoomIn size={16} />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setZoom(1);
+                        onRefresh?.();
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 md:px-3 md:py-1 rounded-lg text-gray-300 hover:text-green-400 hover:bg-[#162b3d]"
+                    >
+                      <RefreshCcw size={14} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -414,7 +466,7 @@ export default function MainLayout() {
               />
             )}
             <div className="h-full">
-              <Outlet />
+              <Outlet context={{ zoom }} />
             </div>
           </div>
         </div>
