@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, XCircle, ShieldAlert } from "lucide-react";
 
 import logo from "../assets/DK logo.svg";
 
@@ -293,8 +293,9 @@ export default function Login() {
             </div>
           )}
 
-          <p className="text-center text-gray-400 text-sm mt-4 italic">
-            Secure dashboard access
+         <div className="flex items-center justify-center gap-2 text-gray-400 text-xs mt-4">
+          <ShieldAlert size={14} className="text-amber-400" />
+          This dashboard is for my personal use only. Unauthorized login attempts are not permitted.
           </p>
 
         </div>
