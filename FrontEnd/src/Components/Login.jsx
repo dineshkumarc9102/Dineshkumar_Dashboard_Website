@@ -295,8 +295,8 @@ export default function Login() {
 
          <div className="flex items-center justify-center gap-2 text-gray-400 text-xs mt-4">
           <ShieldAlert size={14} className="text-amber-400" />
-          This dashboard is for my personal use only. Unauthorized login attempts are not permitted.
-          </p>
+          <span>This dashboard is for my personal use only. Unauthorized login attempts are not permitted.</span>
+          </div>
 
         </div>
       </motion.div>
